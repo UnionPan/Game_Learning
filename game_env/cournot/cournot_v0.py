@@ -64,8 +64,11 @@ class Cournot_v0(ParallelEnv):
         print('*'*32)
         
     
-    def reset(self, seed=None, stochastic_option=None):
-        actions = np.array([ self.market_capacity.reshape(self._no_goods,1) / (self._no_agents * 2) for agent_id in range(self._no_agents)])
+    def reset(self, initial=None, seed=None, stochastic_option=None):
+        if initial is None:
+            actions = np.array([ self.market_capacity.reshape(self._no_goods,1) / (self._no_agents * 2) for agent_id in range(self._no_agents)])
+        else:
+            actions = initial
         self.production = actions
         partial_gradients = np.array([ self.partial_gradient(i, actions) for i in range(self._no_agents)])
         # print(np.shape(partial_gradients))
@@ -100,8 +103,9 @@ class Cournot_v0(ParallelEnv):
         if agent_id >= self._no_agents:
             raise ValueError("agent ID does not exist!")
         total_production = np.sum(actions, axis=0)
-        #print(np.shape(total_production))
-        profit = np.dot(np.clip(self.market_capacity -  total_production, a_min=0, a_max=None).T, actions[agent_id])
+        #print(total_production)
+    
+        profit = np.dot((np.clip(self.market_capacity -  total_production, a_min=0, a_max=None) - self.costs[:, agent_id].reshape(self._no_goods,1)).T, actions[agent_id])
         return profit 
     
     def partial_gradient(self, agent_id, actions):

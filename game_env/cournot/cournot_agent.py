@@ -12,12 +12,14 @@ class CournotAgent:
         self.production_trajectory = []
         self.total_production_trajectory = []
         self.price_trajectory = []
+        
 
     def choose_production(self, observation):
         # The observation should include the partial gradients for all agents
         # Perform gradient ascent
         action = self.production.reshape(observation.shape) + self.learning_rate * observation
         action = np.clip(action, 0, None)  # Ensure action is non-negative
+        
         return action
 
     def update_production(self, production):
@@ -28,11 +30,13 @@ class CournotAgent:
         self.total_production_trajectory.append(total_production)
         self.production_trajectory.append(self.production)
         self.price_trajectory.append(price)
+        
     
     def reset_log(self):
         self.total_production_trajectory = []
         self.production_trajectory = []
         self.price_trajectory = []
+        
         
     def plot_trajectory(self, eq_str=None, eq_price=None):
         plt.figure(figsize=(12, 6))
